@@ -13,4 +13,3 @@ urlpatterns = [
     path('auth/', include('rest_framework.urls')),
 ]
 
-# urlpatterns = router.urls

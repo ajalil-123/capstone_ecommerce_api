@@ -1,24 +1,30 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from .models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
 from django.contrib.auth.models import User
-# from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
+from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+class ProductPagination(PageNumberPagination):
+    page_size = 5  
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticatedOrReadOnly] 
-
+    pagination_class = ProductPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'category__name']
 
     def create(self, request, *args, **kwargs):
         """Create a new product"""
